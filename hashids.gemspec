@@ -6,6 +6,7 @@ require 'sqids'
 Gem::Specification.new do |gem|
   gem.name          = "sqids"
   gem.version       = "0.1.0"
+  gem.authors       = ["Sqids Maintainers"]
   gem.summary       = %q{Generate YouTube-like ids from numbers.}
   gem.homepage      = "https://sqids.org/ruby"
   gem.license       = "MIT"
