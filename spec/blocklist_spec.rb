@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec'
 require 'set'
 require_relative '../lib/sqids'
@@ -29,7 +31,7 @@ describe Sqids do
   end
 
   it 'uses blocklist to prevent certain encodings' do
-    sqids = Sqids.new(blocklist: Set.new(%w[8QRLaD 7T1cd0dL RA8UeIe7 WM3Limhw LfUQh4HN]))
+    sqids = Sqids.new(blocklist: Set.new(%w[8QRLaD 7T1cd0dL UeIe imhw LfUQ]))
 
     expect(sqids.encode([1, 2, 3])).to eq('TM0x1Mxz')
     expect(sqids.decode('TM0x1Mxz')).to eq([1, 2, 3])
@@ -48,6 +50,6 @@ describe Sqids do
   it 'matches against a short blocklist word' do
     sqids = Sqids.new(blocklist: Set.new(['pPQ']))
 
-    expect(sqids.decode(sqids.encode([1000]))).to eq([1000])
+    expect(sqids.decode(sqids.encode([1_000]))).to eq([1_000])
   end
 end

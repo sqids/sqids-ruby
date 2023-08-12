@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec'
 require_relative '../lib/sqids'
 
@@ -37,8 +39,8 @@ describe Sqids do
   end
 
   it 'encodes with different min lengths' do
-    for min_length in [0, 1, 5, 10, default_alphabet.length]
-      for numbers in [
+    [0, 1, 5, 10, default_alphabet.length].each do |min_length|
+      [
         [Sqids.min_value],
         [0, 0, 0, 0, 0],
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -46,7 +48,7 @@ describe Sqids do
         [1_000, 2_000, 3_000],
         [1_000_000],
         [Sqids.max_value]
-      ]
+      ].each do |numbers|
         sqids = Sqids.new(min_length: min_length)
 
         id = sqids.encode(numbers)
