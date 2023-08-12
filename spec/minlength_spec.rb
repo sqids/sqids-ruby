@@ -49,7 +49,7 @@ describe Sqids do
         [1_000_000],
         [Sqids.max_value]
       ].each do |numbers|
-        sqids = Sqids.new(min_length: min_length)
+        sqids = Sqids.new(min_length:)
 
         id = sqids.encode(numbers)
         expect(id.length).to be >= min_length
