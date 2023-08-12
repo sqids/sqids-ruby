@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+require 'English'
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'sqids'
@@ -12,7 +15,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 3.1'
 
-  gem.files         = `git ls-files`.split($/)
+  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   gem.test_files    = gem.files.grep(%r{^(spec)/})
   gem.require_paths = ['lib']
 end
