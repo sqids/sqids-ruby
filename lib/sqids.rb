@@ -1,3 +1,5 @@
+require 'set'
+
 class Sqids
   DEFAULT_ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   DEFAULT_MIN_LENGTH = 0

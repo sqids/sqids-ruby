@@ -1,4 +1,5 @@
 require 'rspec'
+require 'set'
 require_relative '../lib/sqids'
 
 describe Sqids do
