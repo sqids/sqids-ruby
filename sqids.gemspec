@@ -7,7 +7,7 @@ require 'sqids'
 
 Gem::Specification.new do |gem|
   gem.name          = 'sqids'
-  gem.version       = '0.1.1'
+  gem.version       = '0.1.2'
   gem.authors       = ['Sqids Maintainers']
   gem.summary       = 'Generate YouTube-like ids from numbers.'
   gem.homepage      = 'https://sqids.org/ruby'

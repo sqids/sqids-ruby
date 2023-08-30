@@ -28,7 +28,7 @@ class Sqids
     end
 
     filtered_blocklist = blocklist.select do |word|
-      word.length >= 3 && (word.chars - alphabet.chars).empty?
+      word.length >= 3 && (word.downcase.chars - alphabet.downcase.chars).empty?
     end.to_set(&:downcase)
 
     @alphabet = shuffle(alphabet)

@@ -52,4 +52,15 @@ describe Sqids do
 
     expect(sqids.decode(sqids.encode([1_000]))).to eq([1_000])
   end
+
+  it 'blocklist filtering in constructor' do
+    # lowercase blocklist in only-uppercase alphabet
+    sqids = Sqids.new(alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', blocklist: Set.new(['sqnmpn']))
+
+    id = sqids.encode([1, 2, 3])
+    numbers = sqids.decode(id)
+
+    expect(id).to eq('ULPBZGBM') # without blocklist, would've been "SQNMPN"
+    expect(numbers).to eq([1, 2, 3])
+  end
 end
