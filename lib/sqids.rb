@@ -15,16 +15,18 @@ class Sqids
     min_length = options[:min_length] || DEFAULT_MIN_LENGTH
     blocklist = options[:blocklist] || DEFAULT_BLOCKLIST
 
-    raise ArgumentError, 'Alphabet length must be at least 5' if alphabet.length < 5
+    raise ArgumentError, 'Alphabet cannot contain multibyte characters' if contains_multibyte_chars(alphabet)
+    raise ArgumentError, 'Alphabet length must be at least 3' if alphabet.length < 3
 
     if alphabet.chars.uniq.size != alphabet.length
       raise ArgumentError,
             'Alphabet must contain unique characters'
     end
 
-    unless min_length.is_a?(Integer) && min_length >= Sqids.min_value && min_length <= alphabet.length
+    min_length_limit = 255
+    unless min_length.is_a?(Integer) && min_length >= 0 && min_length <= min_length_limit
       raise TypeError,
-            "Minimum length has to be between #{Sqids.min_value} and #{alphabet.length}"
+            "Minimum length has to be between 0 and #{min_length_limit}"
     end
 
     filtered_blocklist = blocklist.select do |word|
@@ -39,13 +41,13 @@ class Sqids
   def encode(numbers)
     return '' if numbers.empty?
 
-    in_range_numbers = numbers.select { |n| n >= Sqids.min_value && n <= Sqids.max_value }
+    in_range_numbers = numbers.select { |n| n >= 0 && n <= Sqids.max_value }
     unless in_range_numbers.length == numbers.length
       raise ArgumentError,
-            "Encoding supports numbers between #{Sqids.min_value} and #{Sqids.max_value}"
+            "Encoding supports numbers between 0 and #{Sqids.max_value}"
     end
 
-    encode_numbers(in_range_numbers, partitioned: false)
+    encode_numbers(in_range_numbers)
   end
 
   def decode(id)
@@ -61,26 +63,18 @@ class Sqids
     prefix = id[0]
     offset = @alphabet.index(prefix)
     alphabet = @alphabet.slice(offset, @alphabet.length) + @alphabet.slice(0, offset)
-    partition = alphabet[1]
-    alphabet = alphabet.slice(2, alphabet.length)
+    alphabet = alphabet.reverse
 
     id = id[1, id.length]
 
-    partition_index = id.index(partition)
-    if !partition_index.nil? && partition_index.positive? && partition_index < id.length - 1
-      id = id[partition_index + 1, id.length]
-      alphabet = shuffle(alphabet)
-    end
-
     while id.length.positive?
-      separator = alphabet[-1]
+      separator = alphabet[0]
+
       chunks = id.split(separator, 2)
-
       if chunks.any?
-        alphabet_without_separator = alphabet.slice(0, alphabet.length - 1)
-        return [] unless chunks[0].chars.all? { |c| alphabet_without_separator.include?(c) }
+        return ret if chunks[0] == ''
 
-        ret.push(to_number(chunks[0], alphabet_without_separator))
+        ret.push(to_number(chunks[0], alphabet.slice(1, alphabet.length - 1)))
         alphabet = shuffle(alphabet) if chunks.length > 1
       end
 
@@ -88,14 +82,6 @@ class Sqids
     end
 
     ret
-  end
-
-  def self.min_value
-    0
-  end
-
-  def self.max_value
-    defined?(Integer::MAX) ? Integer::MAX : ((2**((0.size * 8) - 2)) - 1)
   end
 
   private
@@ -115,59 +101,42 @@ class Sqids
     chars.join
   end
 
-  def encode_numbers(numbers, partitioned: false)
+  def encode_numbers(numbers, increment: 0)
+    raise ArgumentError, 'Reached max attempts to re-generate the ID' if increment > @alphabet.length
+
     offset = numbers.length
     numbers.each_with_index do |v, i|
       offset += @alphabet[v % @alphabet.length].ord + i
     end
     offset = offset % @alphabet.length
+    offset = (offset + increment) % @alphabet.length
 
     alphabet = @alphabet.slice(offset, @alphabet.length) + @alphabet.slice(0, offset)
     prefix = alphabet[0]
-    partition = alphabet[1]
-    alphabet = alphabet.slice(2, alphabet.length)
+    alphabet = alphabet.reverse
     ret = [prefix]
 
     numbers.each_with_index do |num, i|
-      alphabet_without_separator = alphabet.slice(0, alphabet.length - 1)
-      ret.push(to_id(num, alphabet_without_separator))
+      ret.push(to_id(num, alphabet.slice(1, alphabet.length - 1)))
 
       next unless i < numbers.length - 1
 
-      separator = alphabet[-1]
-      if partitioned && i.zero?
-        ret.push(partition)
-      else
-        ret.push(separator)
-      end
-
+      ret.push(alphabet[0])
       alphabet = shuffle(alphabet)
     end
 
     id = ret.join
 
     if @min_length > id.length
-      unless partitioned
-        numbers = [0] + numbers
-        id = encode_numbers(numbers, partitioned: true)
-      end
+      id += alphabet[0]
 
-      if @min_length > id.length
-        id = id[0] + alphabet[0,
-                              @min_length - id.length] + id[1,
-                                                            id.length - 1]
+      while (@min_length - id.length).positive?
+        alphabet = shuffle(alphabet)
+        id += alphabet.slice(0, [@min_length - id.length, alphabet.length].min)
       end
     end
 
-    if blocked_id?(id)
-      if partitioned
-        numbers[0] += 1
-      else
-        numbers = [0] + numbers
-      end
-
-      id = encode_numbers(numbers, partitioned: true)
-    end
+    id = encode_numbers(numbers, increment: increment + 1) if blocked_id?(id)
 
     id
   end
@@ -205,5 +174,17 @@ class Sqids
         end
       end
     end
+  end
+
+  def contains_multibyte_chars(input_str)
+    input_str.each_char do |char|
+      return true if char.bytesize > 1
+    end
+
+    false
+  end
+
+  def self.max_value
+    defined?(Integer::MAX) ? Integer::MAX : ((2**((0.size * 8) - 2)) - 1)
   end
 end

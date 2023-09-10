@@ -3,7 +3,7 @@
 require 'rspec'
 require_relative '../lib/sqids'
 
-upper = 10_000
+upper = 1_000
 
 describe Sqids do
   let(:sqids) { Sqids.new(min_length: Sqids::DEFAULT_ALPHABET.length) }

@@ -8,14 +8,14 @@ describe Sqids do
     sqids = Sqids.new(alphabet: '0123456789abcdef')
 
     numbers = [1, 2, 3]
-    id = '4d9fd2'
+    id = '489158'
 
     expect(sqids.encode(numbers)).to eq(id)
     expect(sqids.decode(id)).to eq(numbers)
   end
 
   it 'decodes after encoding with a short alphabet' do
-    sqids = Sqids.new(alphabet: 'abcde')
+    sqids = Sqids.new(alphabet: 'abc')
 
     numbers = [1, 2, 3]
     encoded = sqids.encode(numbers)
@@ -33,6 +33,12 @@ describe Sqids do
     expect(sqids.decode(encoded)).to eq(numbers)
   end
 
+  it 'fails when alphabet has multibyte characters' do
+    expect do
+      Sqids.new(alphabet: 'ë1092')
+    end.to raise_error(ArgumentError)
+  end
+
   it 'fails when alphabet characters are repeated' do
     expect do
       Sqids.new(alphabet: 'aabcdefg')
@@ -41,7 +47,7 @@ describe Sqids do
 
   it 'fails when alphabet is too short' do
     expect do
-      Sqids.new(alphabet: 'abcd')
+      Sqids.new(alphabet: 'ab')
     end.to raise_error(ArgumentError)
   end
 end
