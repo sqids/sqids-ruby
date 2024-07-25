@@ -86,6 +86,11 @@ id = sqids.encode([1, 2, 3]) # 'se8ojk'
 numbers = sqids.decode(id) # [1, 2, 3]
 ```
 
+> [!WARNING]  
+> If you provide a large custom blocklist and/or custom alphabet, calls to `Sqid.new` can take 
+> ~1ms. You should create a singleton instance of `Sqid` at service start and reusing that rather than
+> repeatedly calling `Squid.new`
+
 ## 📝 License
 
 [MIT](LICENSE)
