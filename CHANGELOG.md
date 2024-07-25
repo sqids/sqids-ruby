@@ -1,5 +1,8 @@
 # CHANGELOG
 
+**v0.2.1:**
+- Improvement: speeding up Sqids.new: [[PR #7](https://github.com/sqids/sqids-ruby/pull/7)] (thanks to [@lawrencegripper](https://github.com/lawrencegripper))
+
 **v0.2.0:** **⚠️ BREAKING CHANGE**
 - **Breaking change**: IDs change. Algorithm has been fine-tuned for better performance [[Issue #11](https://github.com/sqids/sqids-spec/issues/11)]
 - `alphabet` cannot contain multibyte characters
