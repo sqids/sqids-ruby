@@ -29,9 +29,19 @@ class Sqids
             "Minimum length has to be between 0 and #{min_length_limit}"
     end
 
-    filtered_blocklist = blocklist.select do |word|
-      word.length >= 3 && (word.downcase.chars - alphabet.downcase.chars).empty?
-    end.to_set(&:downcase)
+    filtered_blocklist = if blocklist == DEFAULT_BLOCKLIST && alphabet == DEFAULT_ALPHABET
+                           # If the blocklist is the default one, we don't need to filter it
+                           # we already know it's valid (lowercase and words longer than 3 chars)
+                           blocklist
+                         else
+                           # Downcase the alphabet once, rather than in the loop, to save significant time
+                           # with large blocklists
+                           downcased_alphabet = alphabet.downcase.chars
+                           # Filter the blocklist
+                           blocklist.select do |word|
+                             word.length >= 3 && (word.downcase.chars - downcased_alphabet).empty?
+                           end.to_set(&:downcase)
+                         end
 
     @alphabet = shuffle(alphabet)
     @min_length = min_length
