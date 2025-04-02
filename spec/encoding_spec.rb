@@ -100,6 +100,14 @@ describe 'Sqids' do
     expect(sqids.encode([])).to eq('')
   end
 
+  it 'encoding with float' do
+    sqids = Sqids.new
+    float = 3.14159265
+    encoded_float = sqids.encode([float])
+    encoded_int = sqids.encode([float.to_i])
+    expect(encoded_float).to eq(encoded_int)
+  end
+
   it 'decoding empty string' do
     sqids = Sqids.new
     expect(sqids.decode('')).to eq([])

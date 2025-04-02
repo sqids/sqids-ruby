@@ -51,7 +51,7 @@ class Sqids
   def encode(numbers)
     return '' if numbers.empty?
 
-    in_range_numbers = numbers.select { |n| n >= 0 && n <= Sqids.max_value }
+    in_range_numbers = numbers.map(&:to_i).select { |n| n >= 0 && n <= Sqids.max_value }
     unless in_range_numbers.length == numbers.length
       raise ArgumentError,
             "Encoding supports numbers between 0 and #{Sqids.max_value}"
