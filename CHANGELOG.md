@@ -1,5 +1,8 @@
 # CHANGELOG
 
+**v0.2.2:**
+- Improvement: Encoding floats creates large encoded string: [[PR #7](https://github.com/sqids/sqids-ruby/pull/8)] (thanks to [@akeenl-sp](https://github.com/akeenl-sp))
+
 **v0.2.1:**
 - Improvement: speeding up Sqids.new: [[PR #7](https://github.com/sqids/sqids-ruby/pull/7)] (thanks to [@lawrencegripper](https://github.com/lawrencegripper))
 
